@@ -79,9 +79,8 @@ class ThreeFeet:
         self.tfmini_back.get_data()
         self.tfmini_front.get_data()
 
-    def print_both_sensors(self):
-        self.tfmini_back.get_data()
-        self.tfmini_front.get_data()
+    def print_both_sensor_readings(self):
+        self.start_sensing()
         print("back sensor: {:}".format(self.tfmini_back.distance))
         print("front sensor: {:}\n".format(self.tfmini_front.distance))        
 
@@ -109,9 +108,9 @@ class ThreeFeet:
         '''3.5 feet is about 106 cm. TFMini Plus returns cm values'''
         while True:
             self.print_both_sensors()
-            if self.tfmini_back.distance > 106 or self.tfmini_back.distance < 0:
-                continue
-
+            # case 1: back sensor detects vehicle within 3 feet, front sensor does not
+            # case 2: back sensor doesn't detect vehicle within 3 feet, front sensor does
+            # case 3: both sensors detect vehicle within 3 feet
             # back sensor took a reading less than 3.5 feet
             dist = confirm_reading_from_sensor(self.tfmini_back)
             if dist > 106:
