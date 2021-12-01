@@ -1,0 +1,122 @@
+[
+    {
+        "id": "19183a404d6ab43d",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "192c78de4a166160",
+        "type": "serial-port",
+        "serialport": "/dev/ttyS0",
+        "serialbaud": "115200",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "0x59",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "9",
+        "bin": "bin",
+        "out": "count",
+        "addchar": "",
+        "responsetimeout": "10000"
+    },
+    {
+        "id": "b7faea3ba1490750",
+        "type": "Generic BLE",
+        "localName": "front sensor",
+        "address": "",
+        "uuid": "",
+        "characteristics": []
+    },
+    {
+        "id": "7db3a1c2f15540d4",
+        "type": "debug",
+        "z": "19183a404d6ab43d",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "d960abcdf3cb703a",
+        "type": "serial in",
+        "z": "19183a404d6ab43d",
+        "name": "rear_sensor",
+        "serial": "192c78de4a166160",
+        "x": 90,
+        "y": 320,
+        "wires": [
+            [
+                "472531fdc051033f"
+            ]
+        ]
+    },
+    {
+        "id": "b099e38bd0aa7cac",
+        "type": "function",
+        "z": "19183a404d6ab43d",
+        "name": "Check_for_3ft_violation",
+        "func": "const distance = msg.payload;\nvar vehicle_previously_detected = context.get(\"vehicle_previously_detected\") || false;\nvar close_distances = context.get(\"close_distances\") || [];\nvar far_distances = context.get(\"far_distances\") || [];\nvar violation_time = context.get(\"violation_time\") || NaN;\n\n\nif (distance < 106) {\n    if (!vehicle_previously_detected) {\n        close_distances.push(distance);\n        context.set(\"close_distances\",close_distances);\n        \n        if (close_distances.length === 1) {\n            context.set(\"violation_time\", Date.now());\n        } else if (close_distances.length === 10) {\n            context.set(\"vehicle_previously_detected\",true);\n            context.set(\"num_readings\",close_distances.length);\n        }\n        \n    } else {\n        var num_readings = context.get(\"num_readings\");\n        num_readings += 1;\n        context.set(\"num_readings\",num_readings);\n        if (num_readings % 10 === 0) {\n            close_distances.push(distance)\n            context.set(\"close_distances\",close_distances);\n        }\n    }\n} else if (vehicle_previously_detected) {\n    far_distances.push(distance);\n    context.set(\"far_distances\", far_distances);\n\n    if (far_distances.length === 10) {\n        if (close_distances.length > 9) {\n            cur_time = Date.now();\n            time_in_zone =  (cur_time - violation_time) / 1000; // time in seconds\n            const average_distance = close_distances.reduce((partial_sum,cur) => partial_sum + cur, 0) / close_distances.length\n            \n            msg.payload = {\n                \"close_distance_readings\":close_distances.length,\n                \"average_distance\":average_distance,\n                \"time_in_violation_zone\": time_in_zone\n            };\n        }\n        context.set(\"far_distances\",[]);\n        context.set(\"vehicle_previously_detected\",false);\n        context.set(\"close_distances\",[]);\n        context.set(\"violation_time\",NaN);\n        \n        return msg;\n    }\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 180,
+        "wires": [
+            [
+                "7db3a1c2f15540d4"
+            ]
+        ],
+        "info": "this function reads the tfmini plus sensor and sends a message if a 3ft violation has occurred.\n\nIt does this by storing the distance reading if the distance reading is less than 106 cm is less than 3.5 feet. It stores the distance values in an array in the context variable provided by node-red.\n\nIf 5 consecutive readings of the sensor returnes a value within 106 cm, then a car is assumed to have caused it, and "
+    },
+    {
+        "id": "6f178aafbf889cdd",
+        "type": "Generic BLE in",
+        "z": "19183a404d6ab43d",
+        "name": "",
+        "genericBle": "b7faea3ba1490750",
+        "useString": false,
+        "notification": true,
+        "x": 380,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "472531fdc051033f",
+        "type": "function",
+        "z": "19183a404d6ab43d",
+        "name": "validate_data",
+        "func": "var buf =  Buffer.from(msg.payload);\n\nif (buf.readUInt8(0) == 0x59 && buf.readUInt8(1) == 0x59) {\n    distance = buf.readUInt8(2)+buf.readUInt8(3)*256;\n    msg.payload = distance;\n    return msg;\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 320,
+        "wires": [
+            [
+                "b099e38bd0aa7cac"
+            ]
+        ],
+        "info": "validates incoming data from UART serial connection between rpi and TFMini Plus sensor"
+    }
+]
