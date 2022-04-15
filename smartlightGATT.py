@@ -19,7 +19,6 @@ class DistanceCharacteristic(GATT.Characteristic):
             ['notify'], service)
         self.notifying = False
         self.monitor = DistanceMonitor()
-        self.monitor_distance()
 
 
     def notify_distance_violation(self, distance, time):
@@ -39,7 +38,7 @@ class DistanceCharacteristic(GATT.Characteristic):
         if self.notifying:
             print('Already notifying, nothing to do')
             return
-
+        print("notifications activated!")
         self.notifying = True
         self.monitor_distance()
 
@@ -52,7 +51,7 @@ class DistanceCharacteristic(GATT.Characteristic):
 
 class DistanceService(GATT.Service):
     def __init__(self, bus, index):
-        print("Initialising DistanceService object")
+        print("Initialising DistanceService object at",constants.DISTANCE_SVC_UUID)
         GATT.Service.__init__(
             self, bus, index,
             constants.DISTANCE_SVC_UUID, primary = True)
@@ -67,14 +66,12 @@ class DistanceService(GATT.Service):
 
 
 class SmartLightApplication(GATT.Application):
-    def __init__(self):
+    def __init__(self, bus):
         print("Initialising SmartLightApplication object")
-        GATT.Application.__init__(self)
+        GATT.Application.__init__(self, bus)
         print("Adding Distance Service")
         self.add_service(DistanceService)
         # Add more services here
-        self.advertisement = Advertisement(0,'peripheral','Consense Smart-light')
 
     def register(self):
-        self.advertisement.register()
         super().register()
