@@ -44,8 +44,6 @@ class Advertisement(dbus.service.Object):
 
         self.adv_mgr_interface = None
         self.connected = 0
-
-    def add_signal_receivers(self):
         self.bus.add_signal_receiver(
             self.properties_changed,
             dbus_interface=constants.DBUS_PROPERTIES,
@@ -108,15 +106,15 @@ class Advertisement(dbus.service.Object):
     def Release(self):
         print('%s: Released' % self.path)
 
-#    def set_connected_status(self, status):
-#        if status == 1:
-#            print("Connected!")
-#            self.connected = 1
-#            self.stop_advertising()
-#        else:
-#            print("disconnected")
-#            self.connected = 0
-#            self.register()
+    def set_connected_status(self, status):
+        if status == 1:
+            print("Connected!")
+            self.connected = 1
+            self.stop_advertising()
+        else:
+            print("disconnected")
+            self.connected = 0
+            self.register()
 
     def properties_changed(self, interface, changed, invalidated, path):
         if interface == constants.DEVICE_INTERFACE and "Connected" in changed:
@@ -128,31 +126,31 @@ class Advertisement(dbus.service.Object):
             self.set_connected_status(properties['Connected'])
 
 
-#    def register_ad_cb(self):
-#        print('Advertisement registered OK')
+    def register_ad_cb(self):
+        print('Advertisement registered OK')
 
-#    def register_ad_error_cb(self, error):
-#        print('Error: Failed to register advertisement: ' + str(error))
+    def register_ad_error_cb(self, error):
+        print('Error: Failed to register advertisement: ' + str(error))
 
-#    def stop_advertising(self):
-#        print("Unregistering advertisement",self.get_path())
-#        self.adv_mgr_interface.UnregisterAdvertisement(self.get_path())
+    def stop_advertising(self):
+        print("Unregistering advertisement",self.get_path())
+        self.adv_mgr_interface.UnregisterAdvertisement(self.get_path())
 
-#    def register(self):
-#        adapter_path = bletools.find_adapter_path(self.bus)
-#        print("found adapter at",adapter_path)
-#        # get access to adapter object from DBus
-#        self.adv_mgr_interface = dbus.Interface(
-#            self.bus.get_object(constants.BLUEZ_SERVICE_NAME, adapter_path),
-#            constants.ADVERTISING_MANAGER_INTERFACE)
+    def register(self):
+        adapter_path = bletools.find_adapter_path(self.bus)
+        print("found adapter at",adapter_path)
+        # get access to adapter object from DBus
+        self.adv_mgr_interface = dbus.Interface(
+            self.bus.get_object(constants.BLUEZ_SERVICE_NAME, adapter_path),
+            constants.ADVERTISING_MANAGER_INTERFACE)
         
-#        print("Registering advertisement",self.get_path(),
-#              "as",self.local_name)
+        print("Registering advertisement",self.get_path(),
+              "as",self.local_name)
         
-#        self.adv_mgr_interface.RegisterAdvertisement(
-#            self.get_path(), {},
-#            reply_handler=self.register_ad_cb,
-#            error_handler=self.register_ad_error_cb)
+        self.adv_mgr_interface.RegisterAdvertisement(
+            self.get_path(), {},
+            reply_handler=self.register_ad_cb,
+            error_handler=self.register_ad_error_cb)
 
 
 
