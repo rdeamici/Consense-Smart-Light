@@ -19,7 +19,7 @@ class Application(dbus.service.Object):
     """
     def __init__(self, bus):
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-        self.bus = dbus.SystemBus()
+        self.bus = bus
         self.mainloop = GLib.MainLoop()
         self.path = '/'
         self.services = []
@@ -53,6 +53,7 @@ class Application(dbus.service.Object):
             error_handler=self.register_app_error_cb)
 
     def run(self):
+        print("running application!")
         self.mainloop.run()
     
     def quit(self):

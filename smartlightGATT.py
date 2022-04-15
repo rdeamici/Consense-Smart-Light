@@ -24,14 +24,16 @@ class DistanceCharacteristic(GATT.Characteristic):
     def notify_distance_violation(self, distance, time):
         if not self.notifying:
             return
-
+        print("calling PropertiesChanged...")
         self.PropertiesChanged(
             constants.GATT_CHARACTERISTIC_INTERFACE,
             {'Value': [dbus.Byte(distance)]}, [])
+        print("    DONE!")
 
     def monitor_distance(self):
         while self.notifying:
             distance, time = self.monitor.scan_for_violations()
+            print("emitting notification signal")
             self.notify_distance_violation(distance, time)
 
     def StartNotify(self):
@@ -47,6 +49,7 @@ class DistanceCharacteristic(GATT.Characteristic):
             print('Not notifying, nothing to do')
             return
 
+        print("notifications de-activated!")
         self.notifying = False
 
 class DistanceService(GATT.Service):
