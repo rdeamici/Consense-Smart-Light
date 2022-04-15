@@ -96,8 +96,8 @@ class DistanceMonitor:
                     # vehicle has cleared the violation zone
                     # incident report will be created
                     avg_distance = sum(self.close_readings)//len(self.close_readings)
-                    avg_distance = avg_distance.to_bytes(2, byteorder='little')
                     print("3-feet violation reported!")
+                    print("distance =",avg_distance)
                     self.reset_violation_detector()
                     return avg_distance, self.violation_time
             #########################################################

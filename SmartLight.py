@@ -3,11 +3,11 @@ import logging
 import dbus
 import dbus.mainloop.glib
 from gi.repository import GLib
+
 # local modules
 import smartlightGATT
 from advertisement import Advertisement
-import constants
-import bletools
+
 # sensor modules
 from distanceMonitor import DistanceMonitor
 
@@ -25,10 +25,11 @@ bus = dbus.SystemBus()
 advertisement = Advertisement(bus, 0,'peripheral','test...')
 advertisement.register()
 
-mainloop = GLib.MainLoop()
-mainloop.run()
-# app.register()
-# try:
-#    app.run()
-# except KeyboardInterrupt:
-#    app.quit()
+app = smartlightGATT.SmartLightApplication(bus)
+#mainloop = GLib.MainLoop()
+#mainloop.run()
+app.register()
+try:
+    app.run()
+except KeyboardInterrupt:
+    app.quit()
