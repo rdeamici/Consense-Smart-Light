@@ -1,4 +1,8 @@
 import dbus
+import dbus.mainloop.glib
+from gi.repository import GLib
+
+#local modules
 import constants
 
 def find_adapter_path(bus):
@@ -14,3 +18,21 @@ def find_adapter_path(bus):
             return o
 
     return None
+
+class eventLoop:
+    """Facade class to help with using GLib event loop"""
+    def __init__(self):
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        self.mainloop = GLib.MainLoop()
+
+    def run(self):
+        """Run event loop"""
+        self.mainloop.run()
+
+    def quit(self):
+        """Stop event loop"""
+        self.mainloop.quit()
+
+    def is_running(self):
+        """Check if event loop is running"""
+        self.mainloop.is_running() 

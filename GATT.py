@@ -18,9 +18,8 @@ class Application(dbus.service.Object):
     org.bluez.GattApplication1 interface implementation
     """
     def __init__(self, bus):
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+        self.eventLoop = bletools.eventLoop()
         self.bus = bus
-        self.mainloop = GLib.MainLoop()
         self.path = '/'
         self.services = []
         self.srvc_index = 0
@@ -54,11 +53,11 @@ class Application(dbus.service.Object):
 
     def run(self):
         print("running application!")
-        self.mainloop.run()
+        self.eventLoop.run()
     
     def quit(self):
         print("\nGATT application terminated")
-        self.mainloop.quit()
+        self.eventLoop.quit()
 
 
     @dbus.service.method(constants.DBUS_OM_IFACE,

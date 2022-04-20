@@ -21,20 +21,26 @@ class DistanceCharacteristic(GATT.Characteristic):
         self.monitor = DistanceMonitor()
 
 
-    def notify_distance_violation(self, distance, time):
-        if not self.notifying:
-            return
-        print("calling PropertiesChanged...")
-        self.PropertiesChanged(
-            constants.GATT_CHARACTERISTIC_INTERFACE,
-            {'Value': [dbus.Byte(distance)]}, [])
-        print("    DONE!")
+    def distance_violation_cb(self):
+        self.monitor.scan_for_violations()
+        violation_distance = self.monitor.violation_distance
+        if violation_distance > 0:
+            print("violation detected, sending notification!")
+            print("distance =",violation_distance)
+            self.PropertiesChanged(
+                constants.GATT_CHARACTERISTIC_INTERFACE,
+                {'Value': [dbus.Byte(violation_distance)]}, [])
+            print("    DONE!")
+            # have to reset the value here or else we can't
+            # both access it here and reset it in DistanceMonitor
+            self.monitor.violation_distance = -1
+        return self.notifying
 
     def monitor_distance(self):
-        while self.notifying:
-            distance, time = self.monitor.scan_for_violations()
-            print("emitting notification signal")
-            self.notify_distance_violation(distance, time)
+        if not self.notifying:
+            return
+        # turn on DistanceMonitor scanning
+        GLib.timeout_add(10,self.distance_violation_cb) #10 ms
 
     def StartNotify(self):
         if self.notifying:
@@ -51,6 +57,8 @@ class DistanceCharacteristic(GATT.Characteristic):
 
         print("notifications de-activated!")
         self.notifying = False
+        self.monitor_distance()
+
 
 class DistanceService(GATT.Service):
     def __init__(self, bus, index):
@@ -75,6 +83,3 @@ class SmartLightApplication(GATT.Application):
         print("Adding Distance Service")
         self.add_service(DistanceService)
         # Add more services here
-
-    def register(self):
-        super().register()
