@@ -5,6 +5,7 @@ import sys
 class TFMini:
     def __init__(self, serial_port="/dev/ttyAMA1"):
         self.port = serial_port
+        self.time_of_reading = None
         self._ser = serial.Serial(self.port,115200)
         if not self._ser.is_open:
             self._ser.open()
@@ -19,13 +20,14 @@ class TFMini:
             print(f"sensor at {self.port} up and sensing...")
         else:
             print(f"sensor at {self.port} not working...")
+        
 
     def read_sensor(self):
-        '''everytime through the loop try to get distance data from sensor
-           if hardware error, distance will be -1 (used for error checking)
-           if distance reported is less than min or greater than max
-           distance will be truncated to the min or max, respectively'''
-
+        ''' everytime through the loop try to get distance data from sensor
+            if hardware error, distance will be -1 (used for error checking)
+            if distance reported is less than min or greater than max
+            distance will be truncated to the min or max, respectively
+        '''
         distance = -1
         strength = -1
 
@@ -63,7 +65,7 @@ class TFMini:
         return self._strength
 
 
-    def close(self):
+    def close_port(self):
         if self._ser != None and self._ser.is_open:
             self._ser.close()
             print(f"\nserial port {self.port} has been closed")
@@ -82,8 +84,8 @@ if __name__ == "__main__":
             print("ms taken to read sensor:")
             print(total_time)
             start = time.time()
-            time.sleep(.001)
+            time.sleep(.009)
     except KeyboardInterrupt:
-        tfmini.close()
+        tfmini.close_port()
 
     print("DONE!")
