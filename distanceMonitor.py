@@ -148,6 +148,7 @@ class DistanceMonitor():
         return violation_distance
 
     def shutdown(self):
+        '''turns off the tfmini's access to the /dev/ttyAMA[0,1] linux device'''
         print("\nshutting down distance monitor")
         self.sensor.close_port()
 
