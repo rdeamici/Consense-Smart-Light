@@ -36,7 +36,7 @@ class Application(dbus.service.Object):
         srvc = service(self.bus, self.srvc_index)
         self.services.append(srvc)
         self.srvc_index += 1
-    
+
     def register_app_cb(self):
         print('GATT application registered')
 
@@ -54,7 +54,7 @@ class Application(dbus.service.Object):
     def run(self):
         print("running application!")
         self.eventLoop.run()
-    
+
     def quit(self):
         print("\nGATT application terminated")
         self.eventLoop.quit()
@@ -153,6 +153,7 @@ class Characteristic(dbus.service.Object):
         self.uuid = uuid
         self.service = service
         self.flags = flags
+        self.desc_index = 0
         self.descriptors = []
         dbus.service.Object.__init__(self, bus, self.path)
 
@@ -172,7 +173,9 @@ class Characteristic(dbus.service.Object):
         return dbus.ObjectPath(self.path)
 
     def add_descriptor(self, descriptor):
+        desc = descriptor(self.bus, self.desc_index,self)
         self.descriptors.append(descriptor)
+        self.desc_index += 1
 
     def get_descriptor_paths(self):
         result = []
@@ -229,10 +232,11 @@ class Descriptor(dbus.service.Object):
     """
     org.bluez.GattDescriptor1 interface implementation
     """
-    def __init__(self, bus, index, uuid, flags, characteristic):
+    def __init__(self, bus, index, uuid, value, flags, characteristic):
         self.path = characteristic.path + '/desc' + str(index)
         self.bus = bus
         self.uuid = uuid
+        self.value = value
         self.flags = flags
         self.chrc = characteristic
         dbus.service.Object.__init__(self, bus, self.path)
@@ -242,6 +246,7 @@ class Descriptor(dbus.service.Object):
             constants.GATT_DESCRIPTOR_INTERFACE: {
                 'Characteristic': self.chrc.get_path(),
                 'UUID': self.uuid,
+                'Value': self.value,
                 'Flags': self.flags,
                 }
             }
