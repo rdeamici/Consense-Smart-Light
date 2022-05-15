@@ -120,6 +120,7 @@ class DistanceMonitor():
             # always reset far readings counter when a close reading is seen
             # The sensor occasionally returns false large-distance readings on the rpi3
             # but rarely seems to return false short-distance readings
+            # essentially ignores the occasional far-distance sensor reading
             self.num_far_readings = 0
 
         elif self.state == 1 and not violation:
