@@ -64,7 +64,6 @@ class Application(dbus.service.Object):
                          out_signature='a{oa{sa{sv}}}')
     def GetManagedObjects(self):
         response = {}
-        print('GetManagedObjects')
 
         for service in self.services:
             response[service.get_path()] = service.get_properties()
@@ -74,7 +73,6 @@ class Application(dbus.service.Object):
                 descs = chrc.get_descriptors()
                 for desc in descs:
                     response[desc.get_path()] = desc.get_properties()
-
         return response
 
 
@@ -174,7 +172,7 @@ class Characteristic(dbus.service.Object):
 
     def add_descriptor(self, descriptor):
         desc = descriptor(self.bus, self.desc_index, self)
-        self.descriptors.append(descriptor)
+        self.descriptors.append(desc)
         self.desc_index += 1
 
     def get_descriptor_paths(self):
@@ -262,11 +260,11 @@ class Descriptor(dbus.service.Object):
         if interface != constants.GATT_DESCRIPTOR_INTERFACE:
             raise exceptions.InvalidArgsException()
 
-        return self.get_properties()[constants.GATT_DESCRIPTOR_INTERFACE]
+        return self.get_properties()[interface]
 
     @dbus.service.method(constants.GATT_DESCRIPTOR_INTERFACE,
                         in_signature='a{sv}',
-                        out_signature='ay')
+                        out_signature='')
     def ReadValue(self, options):
         print ('Default ReadValue called, returning error')
         raise exceptions.NotSupportedException()
