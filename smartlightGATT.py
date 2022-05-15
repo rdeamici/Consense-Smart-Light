@@ -41,6 +41,7 @@ class DistanceCharacteristic(GATT.Characteristic):
 
     def distance_violation_cb(self):
         violation_distance = self.monitor.scan_for_violations()
+        # monitor returns -1 except the exact moment it records a violation.
         if violation_distance > 0:
             print("Sending notification!")
             print("distance =",violation_distance)
