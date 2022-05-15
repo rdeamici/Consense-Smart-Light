@@ -57,6 +57,7 @@ TEMPERATURE_CHR_UUID = "e95d9250-251d-470a-a062-fa1922dfa9a8"
 
 DISTANCE_SVC_UUID = "adee5748-a528-4a95-bdc1-a770520cf415"
 DISTANCE_CHRC_UUID = "e26bc0a1-5009-4ac9-ae09-b549855b0342"
+# see Bluetooth SIG assigned values for distance(inch)
 DISTANCE_CHR_VALUE = [0x06, 0x00, 0xA2, 0x27, 0x00, 0x00, 0x00]
 
 # Bluetooth SIG adopted UUID for Characteristic Presentation Format
