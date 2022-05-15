@@ -83,6 +83,7 @@ class DistanceMonitor():
         ######################## state 0 ########################
         if self.state == 0 and violation:
             # detected a distance < 6.5 feet,
+            # inspiration from this came from the streaming average data structure
             self.close_readings += self.sensor.distance
             self.num_close_readings += 1
             if self.num_close_readings == 1:
