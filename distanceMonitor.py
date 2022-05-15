@@ -144,6 +144,7 @@ class DistanceMonitor():
                 self.reset_violation_detector()
                 violation_distance = avg_distance
         #########################################################
+        # returns -1 except in the case an actual violation is detected, in which it returns a positive number
         return violation_distance
 
     def shutdown(self):
