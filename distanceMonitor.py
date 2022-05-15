@@ -35,6 +35,7 @@ class DistanceMonitor():
 
            This will only return true on the exact 5th reading, so 
            calling this function for consecutive readings > 5 in a row will return false
+           Thus the state only changes on the 5th reading in a row
         '''
         return readings == 5
 
