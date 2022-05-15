@@ -17,7 +17,7 @@ class DistanceDescriptor(GATT.Descriptor):
             uuid=constants.CHR_PRES_FMT_UUID,
             value=constants.DISTANCE_CHR_VALUE,
             flags=['read'],
-           characteristic
+           characteristic=characteristic
         )
 
     def ReadValue(self):

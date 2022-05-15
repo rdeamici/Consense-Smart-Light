@@ -42,7 +42,7 @@ class Application(dbus.service.Object):
 
     def register_app_error_cb(self, error):
         print('Failed to register application: ' + str(error))
-        self.mainloop.quit()
+        self.quit()
 
     def register(self):
         print('Registering GATT application...')
@@ -173,7 +173,7 @@ class Characteristic(dbus.service.Object):
         return dbus.ObjectPath(self.path)
 
     def add_descriptor(self, descriptor):
-        desc = descriptor(self.bus, self.desc_index,self)
+        desc = descriptor(self.bus, self.desc_index, self)
         self.descriptors.append(descriptor)
         self.desc_index += 1
 
@@ -234,6 +234,7 @@ class Descriptor(dbus.service.Object):
     """
     def __init__(self, bus, index, uuid, value, flags, characteristic):
         self.path = characteristic.path + '/desc' + str(index)
+        print("creating descriptor at ",self.path)
         self.bus = bus
         self.uuid = uuid
         self.value = value
