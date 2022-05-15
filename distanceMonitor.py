@@ -71,6 +71,9 @@ class DistanceMonitor():
         if test and res[0]>1000:
             print("distance:",res[0],'\n','strength',res[1],'\n')
         # -1 is sensor err code
+        # if the sensor returns an error code, skip this reading entirely. This will add 10ms of dead space
+        # shouldn't be an issue except in certain edge cases. Probably not worth it to try to engineer for these
+        # rather extreme edge cases. Something to be aware of though as more testing happens
         if self.sensor.distance < 0:
             return violation_distance
         # 84 inches is 6 feet + 1 foot for distance from the sensor
