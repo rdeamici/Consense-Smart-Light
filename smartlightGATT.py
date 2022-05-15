@@ -22,10 +22,9 @@ class DistanceCharacteristic(GATT.Characteristic):
 
 
     def distance_violation_cb(self):
-        self.monitor.scan_for_violations()
-        violation_distance = self.monitor.violation_distance
+        violation_distance = self.monitor.scan_for_violations()
         if violation_distance > 0:
-            print("violation detected, sending notification!")
+            print("Sending notification!")
             print("distance =",violation_distance)
             self.PropertiesChanged(
                 constants.GATT_CHARACTERISTIC_INTERFACE,
@@ -57,12 +56,12 @@ class DistanceCharacteristic(GATT.Characteristic):
 
         print("notifications de-activated!")
         self.notifying = False
-        self.monitor_distance()
 
 
 class DistanceService(GATT.Service):
     def __init__(self, bus, index):
         print("Initialising DistanceService object at",constants.DISTANCE_SVC_UUID)
+        self.local_name = "DistanceService"
         GATT.Service.__init__(
             self, bus, index,
             constants.DISTANCE_SVC_UUID, primary = True)
@@ -71,7 +70,7 @@ class DistanceService(GATT.Service):
         # add more characteristics here
         # TODO: add BatteryCharacteristic to monitor smartLight battery
         #       will need to look at PiSugar documentation for this
-        # 
+        #
         #       add TemperatureCharacteristic to monitor device temp
         #       operating temp 0C-60C or so
 
@@ -83,3 +82,11 @@ class SmartLightApplication(GATT.Application):
         print("Adding Distance Service")
         self.add_service(DistanceService)
         # Add more services here
+
+    def quit(self):
+        for serv in self.services:
+            if hasattr(serv,'local_name') and serv.local_name=='DistanceService':
+                for chr in serv.characteristics:
+                    if hasattr(chr,'monitor'):
+                        chr.monitor.shutdown()
+        super().quit()

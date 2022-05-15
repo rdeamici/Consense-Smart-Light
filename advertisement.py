@@ -62,7 +62,7 @@ class Advertisement(dbus.service.Object):
 
         if self.service_uuids is not None:
             properties['ServiceUUIDs'] = dbus.Array(self.service_uuids,
-                signature='s')        
+                signature='s')
         if self.solicit_uuids is not None:
             properties['SolicitUUIDs'] = dbus.Array(self.solicit_uuids,
                 signature='s')
@@ -143,10 +143,10 @@ class Advertisement(dbus.service.Object):
         self.adv_mgr_interface = dbus.Interface(
             self.bus.get_object(constants.BLUEZ_SERVICE_NAME, adapter_path),
             constants.ADVERTISING_MANAGER_INTERFACE)
-        
+
         print("Registering advertisement",self.get_path(),
               "as",self.local_name)
-        
+
         self.adv_mgr_interface.RegisterAdvertisement(
             self.get_path(), {},
             reply_handler=self.register_ad_cb,
@@ -158,4 +158,4 @@ if __name__=="__main__":
     adv = Advertisement(0, 'peripheral','test')
     adv.register()
     print("Advertising as "+adv.local_name)
-    
+
