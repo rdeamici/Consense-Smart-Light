@@ -91,7 +91,6 @@ class DistanceMonitor():
             elif self.consecutive_readings(self.num_close_readings):
                 print("Object detected!")
                 self.state = 1
-                self.num_far_readings = 0
             # always reset far_readings counter when a close reading is recorded
             # The sensor occasionally returns false large-distance readings on the rpi3
             # but rarely seems to return false short-distance readings
