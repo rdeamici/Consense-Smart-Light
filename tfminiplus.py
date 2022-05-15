@@ -12,6 +12,7 @@ class TFMini:
             cpuinfo = f.read().lower()
             model_pos = cpuinfo.find("model")
             model = cpuinfo[model_pos:].split(':')[1].strip()
+            # note: will not work for raspberry pi 2. Something to keep in mind...
             self.port += '0' if 'raspberry pi 3' in model else '1'
 
         self.time_of_reading = None
