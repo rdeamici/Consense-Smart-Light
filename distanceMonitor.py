@@ -43,7 +43,7 @@ class DistanceMonitor():
         ''' function that monitors for vehicles that
             come within 7 feet (84 inches) of smart-light sensor. 6 ft distance between the edge of the riders body and a car.
 
-            There are 2 states the monitor can be in:
+            There are 3 states the monitor can be in:
                 state 0: no object detected within 78 inches of sensor,
                          for 5 consecutive sensor readings
 
