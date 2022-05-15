@@ -14,10 +14,10 @@ class DistanceDescriptor(GATT.Descriptor):
     def __init__(self, bus, index, characteristic):
         GATT.Descriptor.__init__(
             self, bus, index,
-            uuid=constants.CHR_PRES_FMT_UUID,
-            value=constants.DISTANCE_CHR_VALUE,
-            flags=['read'],
-           characteristic=characteristic
+            constants.CHR_PRES_FMT_UUID,
+            constants.DISTANCE_CHR_VALUE,
+            ['read'],
+            characteristic
         )
 
     def ReadValue(self):
