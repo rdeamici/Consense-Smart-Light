@@ -59,6 +59,7 @@ class TFMini:
             strength = recv[4] + recv[5]*256
 
         # round down to nearest inch
+        # keeps distance at -1 in the event of an erroneous reading from the sensor
         if self.distance_min < cm_distance*0.39 < self.distance_max:
             # 1 cm = 0.39 inches
             distance = int(cm_distance*0.39)
