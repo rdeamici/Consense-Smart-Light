@@ -116,7 +116,6 @@ class DistanceMonitor():
                 if test: sleep(5)
 
                 self.state = 2
-                self.state_close_readings = 0
 
             # always reset far readings counter when a close reading is seen
             # The sensor occasionally returns false large-distance readings on the rpi3
