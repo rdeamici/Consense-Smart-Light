@@ -1,10 +1,27 @@
 import dbus
-from gi.repository import GLib 
+from gi.repository import GLib
 import GATT
 import constants
 import bletools
 from advertisement import Advertisement
 from distanceMonitor import DistanceMonitor
+
+class DistanceDescriptor(GATT.Descriptor):
+    ''' Descriptor to tell clients The distance
+        characteristic is to be understood as integer
+        value representing inches '''
+
+    def __init__(self, bus, index, characteristic):
+        GATT.Descriptor.__init__(
+            self, bus, index,
+            constants.CHR_PRES_FMT_UUID,
+            constants.DISTANCE_CHR_VALUE,
+            ['read'],
+            characteristic
+        )
+
+    def ReadValue(self):
+        return self.value
 
 class DistanceCharacteristic(GATT.Characteristic):
     ''' Notify only Characteristic
@@ -19,6 +36,7 @@ class DistanceCharacteristic(GATT.Characteristic):
             ['notify'], service)
         self.notifying = False
         self.monitor = DistanceMonitor()
+        self.add_descriptor(DistanceDescriptor)
 
 
     def distance_violation_cb(self):
