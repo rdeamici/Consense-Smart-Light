@@ -1,10 +1,27 @@
 import dbus
-from gi.repository import GLib 
+from gi.repository import GLib
 import GATT
 import constants
 import bletools
 from advertisement import Advertisement
 from distanceMonitor import DistanceMonitor
+
+class DistanceDescriptor(GATT.Descriptor):
+    ''' Descriptor to tell clients The distance
+        characteristic is to be understood as integer
+        value representing inches '''
+
+    def __init__(self, bus, index, characteristic):
+        GATT.Descriptor.__init__(
+            self, bus, index,
+            constants.CHR_PRES_FMT_UUID,
+            constants.DISTANCE_CHR_VALUE,
+            ['read'],
+            characteristic
+        )
+
+    def ReadValue(self):
+        return self.value
 
 class DistanceCharacteristic(GATT.Characteristic):
     ''' Notify only Characteristic
@@ -19,13 +36,14 @@ class DistanceCharacteristic(GATT.Characteristic):
             ['notify'], service)
         self.notifying = False
         self.monitor = DistanceMonitor()
+        self.add_descriptor(DistanceDescriptor)
 
 
     def distance_violation_cb(self):
-        self.monitor.scan_for_violations()
-        violation_distance = self.monitor.violation_distance
+        violation_distance = self.monitor.scan_for_violations()
+        # monitor returns -1 except the exact moment it records a violation.
         if violation_distance > 0:
-            print("violation detected, sending notification!")
+            print("Sending notification!")
             print("distance =",violation_distance)
             self.PropertiesChanged(
                 constants.GATT_CHARACTERISTIC_INTERFACE,
@@ -57,12 +75,12 @@ class DistanceCharacteristic(GATT.Characteristic):
 
         print("notifications de-activated!")
         self.notifying = False
-        self.monitor_distance()
 
 
 class DistanceService(GATT.Service):
     def __init__(self, bus, index):
         print("Initialising DistanceService object at",constants.DISTANCE_SVC_UUID)
+        self.local_name = "DistanceService"
         GATT.Service.__init__(
             self, bus, index,
             constants.DISTANCE_SVC_UUID, primary = True)
@@ -71,7 +89,7 @@ class DistanceService(GATT.Service):
         # add more characteristics here
         # TODO: add BatteryCharacteristic to monitor smartLight battery
         #       will need to look at PiSugar documentation for this
-        # 
+        #
         #       add TemperatureCharacteristic to monitor device temp
         #       operating temp 0C-60C or so
 
@@ -83,3 +101,11 @@ class SmartLightApplication(GATT.Application):
         print("Adding Distance Service")
         self.add_service(DistanceService)
         # Add more services here
+
+    def quit(self):
+        for serv in self.services:
+            if hasattr(serv,'local_name') and serv.local_name=='DistanceService':
+                for chr in serv.characteristics:
+                    if hasattr(chr,'monitor'):
+                        chr.monitor.shutdown()
+        super().quit()
