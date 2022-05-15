@@ -27,7 +27,6 @@ class DistanceMonitor():
         self.num_close_readings = 0
         self.num_far_readings = 0
         self.state = 0
-        self.state_close_readings = 0
 
     def consecutive_readings(self, readings):
         ''' check to see if enough readings of the same value have been
