@@ -64,7 +64,6 @@ class Application(dbus.service.Object):
                          out_signature='a{oa{sa{sv}}}')
     def GetManagedObjects(self):
         response = {}
-        print('GetManagedObjects')
 
         for service in self.services:
             response[service.get_path()] = service.get_properties()
