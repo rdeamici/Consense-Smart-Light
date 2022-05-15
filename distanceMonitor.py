@@ -67,6 +67,7 @@ class DistanceMonitor():
         '''
         violation_distance = -1
         res = self.sensor.read_sensor()
+        # when testing, bogus values returned from sensor tend to be very large
         if test and res[0]>1000:
             print("distance:",res[0],'\n','strength',res[1],'\n')
         # -1 is sensor err code
