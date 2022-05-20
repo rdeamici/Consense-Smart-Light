@@ -30,6 +30,7 @@ class DistanceCharacteristic(GATT.Characteristic):
         of the smart-light '''
 
     def __init__(self, bus, index, service):
+        print("Initialising DistanceCharacteristic object at",constants.DISTANCE_CHRC_UUID)
         GATT.Characteristic.__init__(
             self, bus, index,
             constants.DISTANCE_CHRC_UUID,

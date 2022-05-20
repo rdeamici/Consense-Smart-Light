@@ -76,13 +76,12 @@ class DistanceMonitor():
         # rather extreme edge cases. Something to be aware of though as more testing happens
         if self.sensor.distance < 0:
             return violation_distance
-        # 84 inches is 6 feet + 1 foot for distance from the sensor
-        # to the outermost part of the cyclist closest to the vehicle
-        violation = self.sensor.distance < 84
+        # 73 inches is 6 feet, 1 inch
+        violation = self.sensor.distance < 73
 
         ######################## state 0 ########################
         if self.state == 0 and violation:
-            # detected a distance < 6.5 feet,
+            # detected a distance < 6 feet,
             # inspiration from this came from the streaming average data structure
             self.close_readings += self.sensor.distance
             self.num_close_readings += 1
